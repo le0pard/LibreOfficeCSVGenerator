@@ -99,11 +99,11 @@ public class LibreOfficeCSVGenerator {
         }
         String outputFormatValue = (String)parser.getOptionValue(outputFormat, "doc");
         DocFormat docFormat = null;
-        if (outputFormatValue.compareToIgnoreCase("doc") > 0){
+        if (outputFormatValue.compareToIgnoreCase("doc") == 0){
         	docFormat = DocFormat.DOC;
-        } else if (outputFormatValue.compareToIgnoreCase("docx") > 0) {
+        } else if (outputFormatValue.compareToIgnoreCase("docx") == 0) {
         	docFormat = DocFormat.DOCX;
-        } else if (outputFormatValue.compareToIgnoreCase("pdf") > 0){
+        } else if (outputFormatValue.compareToIgnoreCase("pdf") == 0){
         	docFormat = DocFormat.PDF;
         } else {
         	System.err.println("ERROR: You provide invalid document format. Support: doc, docx, pdf, but not: " + outputFormatValue);
