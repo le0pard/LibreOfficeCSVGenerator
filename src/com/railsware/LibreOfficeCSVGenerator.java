@@ -308,10 +308,7 @@ public class LibreOfficeCSVGenerator {
 			System.err.println("ERROR: Exception with doc");
 			e.printStackTrace();
 		} finally {
-			// close all docs
-			System.out.println("");
 	        System.out.println("Work finished!");
-	        
 			System.exit(0);
 		}
 	}
