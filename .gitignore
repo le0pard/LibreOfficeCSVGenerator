@@ -1,0 +1,7 @@
+.git
+bin
+gen
+.project
+*~
+.settings
+.DS_Store
