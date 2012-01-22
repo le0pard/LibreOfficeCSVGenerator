@@ -1,6 +1,7 @@
 .git
 bin
 gen
+deploy
 .project
 *~
 .settings
