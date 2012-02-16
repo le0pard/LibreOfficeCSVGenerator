@@ -28,6 +28,9 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.table.XCell;
 import com.sun.star.table.XCellRange;
+import com.sun.star.table.XTable;
+import com.sun.star.table.XTableColumns;
+import com.sun.star.table.XTableRows;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextRange;
 import com.sun.star.text.XTextTablesSupplier;
@@ -157,7 +160,7 @@ public class LibreOfficeCSVGenerator {
 	        File folder = new File(outputFolder);
 	        File[] listOfFiles = folder.listFiles();
 	        CSVWriter writer = new CSVWriter(new FileWriter(outputFolder + File.separator + "out" + File.separator + "data.csv"), ',');
-	        writer.writeNext(new String[] { "Файл:", "Сума:" , "Платник:", "Місце проживання:", "Отримувач:", "Код:", "Розрахунковий рахунок:", "МФО банку:", "Призначення платежу:", "Призначення платежу 2:" });
+	        writer.writeNext(new String[] { "Файл:", "Сума:" , "Платник:", "Місце проживання:", "Отримувач:", "Код:", "Розрахунковий рахунок:", "МФО банку:", "Призначення платежу:", "Сума:" , "Платник:", "Місце проживання:", "Отримувач:", "Код:", "Розрахунковий рахунок:", "МФО банку:", "Призначення платежу:" });
 	        System.out.println("Files: " + listOfFiles.length);
 	        for (int i = 0; i < listOfFiles.length; i++) 
 	        {
@@ -225,17 +228,89 @@ public class LibreOfficeCSVGenerator {
 		        XIndexAccess xIndexedTables = (XIndexAccess) UnoRuntime.queryInterface(
 		            XIndexAccess.class, xNamedTables);
 		        
+		        List<String> entries_csv = new ArrayList<String>();
+		        //file
+	        	entries_csv.add(files);
 		        // get the tables
-//		        for (int j = 0; j < xIndexedTables.getCount(); j++) {
-		            Object table = xIndexedTables.getByIndex(0);
+		        for (int j = 0; j < xIndexedTables.getCount(); j++) {
+		        	Object table = xIndexedTables.getByIndex(j);
 		           
 		            XCellRange xCellRange = (XCellRange) UnoRuntime.queryInterface(
 		                    XCellRange.class, table );
-		           XCell xCell = xCellRange.getCellByPosition( 1, 1 );
+		            
+		            XCell xCell = xCellRange.getCellByPosition( 0, 0 );
+			           
+			           XTextRange xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           String mainString = xTextRange.getString();
+		           if (mainString.trim().equalsIgnoreCase("сума:")){
+		        	   //sum
+		        	   xCell = xCellRange.getCellByPosition( 1, 0 );
+		        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           mainString = xTextRange.getString();
+			           entries_csv.add(mainString);
+			           //platn
+		        	   xCell = xCellRange.getCellByPosition( 1, 1 );
+		        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           mainString = xTextRange.getString();
+			           entries_csv.add(mainString);
+			           //city
+		        	   xCell = xCellRange.getCellByPosition( 1, 2 );
+		        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           mainString = xTextRange.getString();
+			           entries_csv.add(mainString);
+			           //take
+		        	   xCell = xCellRange.getCellByPosition( 1, 3 );
+		        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           mainString = xTextRange.getString();
+			           entries_csv.add(mainString.replaceAll("Назва:", "").trim());
+			           //number
+			           String tmpStr = "";
+			           for (int nk=0;nk < 8;nk++){
+			        	   xCell = xCellRange.getCellByPosition( nk, 5 );
+			        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+				        	         XTextRange.class, xCell );
+				           mainString = xTextRange.getString();
+				           tmpStr += mainString;
+		           	   }
+		           	   entries_csv.add(tmpStr);
+		           	   //number
+			           tmpStr = "";
+			           for (int nk=9;nk < 23;nk++){
+			        	   xCell = xCellRange.getCellByPosition( nk, 5 );
+			        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+				        	         XTextRange.class, xCell );
+				           mainString = xTextRange.getString();
+				           tmpStr += mainString;
+		           	   }
+		           	   entries_csv.add(tmpStr);
+		           	   //number
+			           tmpStr = "";
+			           for (int nk=23;nk < 29;nk++){
+			        	   xCell = xCellRange.getCellByPosition( nk, 5 );
+			        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+				        	         XTextRange.class, xCell );
+				           mainString = xTextRange.getString();
+				           tmpStr += mainString;
+		           	   }
+		           	   entries_csv.add(tmpStr);
+		           	   //how to pay
+		           	   xCell = xCellRange.getCellByPosition( 1, 6 );
+		        	   xTextRange = (XTextRange) UnoRuntime.queryInterface(
+			        	         XTextRange.class, xCell );
+			           mainString = xTextRange.getString();
+			           entries_csv.add(mainString);
+		           }
+		           /*
+		           xCell = xCellRange.getCellByPosition( 1, 1 );
 		           
-		           XTextRange xTextRange = (XTextRange) UnoRuntime.queryInterface(
+		           xTextRange = (XTextRange) UnoRuntime.queryInterface(
 		        	         XTextRange.class, xCell );
-		           String mainString = xTextRange.getString();
+		           mainString = xTextRange.getString();
 		           if (mainString.length() > 0){
 		        	   String[] tmpString = mainString.split("\n");
 		        	   for (int k=0;k<tmpString.length;k++){
@@ -299,9 +374,15 @@ public class LibreOfficeCSVGenerator {
 			           entries_csv.add(secAddr);
 			           
 			           writer.writeNext(entries_csv.toArray(new String[entries_csv.size()]));
+			           
 		           }
-//		        } 
+		           */
+		        } 
 		        
+		        if (entries_csv.size() > 1){
+		        	//write
+		        	writer.writeNext(entries_csv.toArray(new String[entries_csv.size()]));
+		        }
 				//close doc
 		        
 				com.sun.star.util.XCloseable xCloseable = 
